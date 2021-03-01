@@ -4,7 +4,7 @@
   background: linear-gradient(#faac74, #e27b36);
   border-radius: 0 0 30px 30px;
   box-shadow: inset -15px 0 #db7430;
-  margin: 2% auto;
+  margin: 1% auto;
 }
 
 .BreadTop {
@@ -13,7 +13,7 @@
   background: linear-gradient(#bc581e, #faac74);
   border-radius: 50% 50% 0 0;
   box-shadow: inset -15px 0 #db7430;
-  margin: 2% auto;
+  margin: 1.5% auto;
   position: relative;
 }
 
@@ -101,14 +101,14 @@
   background: linear-gradient(#7f3608, #702e05);
   background-position: center;
   background-repeat: none;
-  margin: 2% auto;
+  margin: 1.5% auto;
   border-radius: 15px;
 }
 
 .Cheese {
   width: 90%;
   height: 2%;
-  margin: 2% auto;
+  margin: 1.5% auto;
   background: linear-gradient(#f4d004, #d6bb22);
   border-radius: 20px;
 }
@@ -116,7 +116,7 @@
 .Salad {
   width: 88%;
   height: 4%;
-  margin: 2% auto;
+  margin: 1.5% auto;
   background: linear-gradient(#228c1d, #91ce50);
   border-radius: 20px;
 }
@@ -125,5 +125,5 @@
   width: 82%;
   height: .8%;
   background: linear-gradient(#bf3813, #c45e38);
-  margin: 2% auto;
+  margin: 1.5% auto;
 }
