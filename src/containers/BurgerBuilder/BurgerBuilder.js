@@ -14,19 +14,36 @@ const INGREDIENT_PRICES = {
   meat: 3.5,
   bacon: 0.3
 }
+
 class BurgerBuilder extends Component {
   
+
+//  ======================= STATE ===========================
+
   state = {
-    ingredients: {
-      bacon: 0,
-      salad: 0,
-      cheese: 0,
-      meat: 0
-    },
+    ingredients: null,
     totalPrice: 2,
     purchaseable: false,
-    loading: false
+    loading: false,
+    error: false
   }
+
+
+
+//  ===================== LIFECYCLE HOOKS ====================
+
+  componentDidMount(){
+    // "instance" here represents our custom instance of axios in axios-orders.js
+    instance.get('https://react-myburger-dbb5e-default-rtdb.firebaseio.com/ingredients.json').then(
+      response => {
+        this.setState({ ingredients: response.data })
+      }
+    ).catch(err => { this.setState({error: true})})
+  }
+
+
+
+  //  ==================== COMPONENT METHODS ======================
 
   updatePurchaseState (ingredients) {
     const sum = Object.keys(ingredients)
@@ -66,7 +83,7 @@ class BurgerBuilder extends Component {
     }
 
     // firebase syntax requires nodename+.json
-    instance.post('/orde', order)
+    instance.post('/orders.json', order)
     .then(response => this.setState({loading:false, purchasing: false}))
     .catch(error => this.setState({loading:false, purchasing: false}));
 
@@ -111,20 +128,48 @@ class BurgerBuilder extends Component {
     this.updatePurchaseState(updatedIngredients);
   }
 
+
+
+//  ======================== RENDER =========================
+
 	render(){
+
     const disabledInfo = {...this.state.ingredients};
 
     
     for (let key in disabledInfo){
       disabledInfo[key] = disabledInfo[key] <=0;
     }
+    
 
-    let orderSummary = <OrderSummary 
+    // if ingredients have not loaded from database, let burger and order summary load as spinner
+    let orderSummary = null;
+    let burger = this.state.error ? <p>Ingredients cannot be loaded</p> : <Spinner />
+
+    // once ingredients have loaded from database, load burger, order summary, and build controls
+    if (this.state.ingredients){
+      burger = ( 
+        <Auxiliary>
+          <Burger ingredients={this.state.ingredients}/>
+          <BuildControls 
+            ingredientAdded={this.addIngredientHandler}
+            ingredientRemoved={this.removeIngredientHandler}
+            disabled={disabledInfo}
+            price={this.state.totalPrice}
+            purchaseable={this.state.purchaseable}
+            ordered={this.purchaseHandler}/>
+          </Auxiliary>
+      );
+      orderSummary = (
+        <OrderSummary 
             ingredients={this.state.ingredients} 
             price={this.state.totalPrice.toFixed(2)}
             purchaseCanceled={this.purchaseCancelHandler} 
-            purchaseSubmitHandler={this.purchaseSubmitHandler}/>;
+            purchaseSubmitHandler={this.purchaseSubmitHandler}/>
+      );
+    }
 
+    // if loading, set order summary to spinner
     if(this.state.loading){
       orderSummary = <Spinner />
     }
@@ -134,14 +179,7 @@ class BurgerBuilder extends Component {
         <Modal show={this.state.purchasing} dismissModal={this.purchaseCancelHandler}>
           {orderSummary}
         </Modal>
-          <Burger ingredients={this.state.ingredients}/>
-          <BuildControls 
-            ingredientAdded={this.addIngredientHandler}
-            ingredientRemoved={this.removeIngredientHandler}
-            disabled={disabledInfo}
-            price={this.state.totalPrice}
-            purchaseable={this.state.purchaseable}
-            ordered={this.purchaseHandler}/>
+        {burger}
 			</Auxiliary>
 		)
 	}
